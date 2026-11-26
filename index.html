@@ -4,48 +4,68 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MONET — личные финансы</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+    /* Палитра MONET: основной #123A2A · акцент #C9F45C · фон #EEF3E6 */
     :root {
       --ink:#18241e;
-      --muted:#829087;
+      --muted:#7d8f83;
       --green:#164d3b;
-      --green-dark:#103d30;
-      --lime:#d7ff65;
-      --cream:#f6f7f1;
+      --green-deep:#123a2a;
+      --green-darker:#0d2b1f;
+      --lime:#c9f45c;
+      --lime-hi:#d8f98a;
+      --bg:#eef3e6;
+      --cream:#f7faf2;
       --white:#fff;
-      --line:#e9ede5;
+      --line:#e2e9da;
       --orange:#ffb65c;
       --pink:#ff8e9e;
       --purple:#a78bfa;
       --red:#d65d55;
-      --shadow:0 18px 55px rgba(24,53,40,.08);
+      --r-lg:20px; --r-md:15px; --r-sm:11px;
+      --shadow-sm:0 1px 2px rgba(18,58,42,.05);
+      --shadow-md:0 12px 34px rgba(18,58,42,.10);
+      --shadow-lg:0 26px 74px rgba(18,58,42,.16);
+      --ease-out:cubic-bezier(.22,.68,.28,1);
+      --ease-in-out:cubic-bezier(.55,.06,.28,.91);
+      --ease-spring:cubic-bezier(.3,1.3,.45,1);
     }
     * { box-sizing:border-box }
+    html { scroll-behavior:smooth }
     body {
-      margin:0; background:#eef1e9; color:var(--ink);
-      font:14px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      margin:0; background:var(--bg); color:var(--ink);
+      font:14px/1.55 Manrope,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
     }
+    ::selection { background:#c9f45c99 }
     button,input,select { font:inherit }
     button { cursor:pointer }
+    :focus-visible { outline:2px solid var(--green); outline-offset:2px; border-radius:6px }
+
     .app { max-width:1500px; min-height:100vh; margin:auto; padding:18px }
     .layout {
       display:grid; grid-template-columns:245px minmax(0,1fr);
       min-height:calc(100vh - 36px); overflow:hidden;
-      background:var(--cream); border:1px solid #e5e9df;
-      border-radius:27px; box-shadow:var(--shadow);
+      background:var(--cream); border:1px solid #dfe8d3;
+      border-radius:28px; box-shadow:var(--shadow-md);
     }
     aside {
       display:flex; flex-direction:column; padding:25px 17px;
-      color:#e8f1e8; background:var(--green-dark);
+      color:#e8f1e8;
+      background:linear-gradient(185deg,var(--green-deep) 8%,var(--green-darker) 92%);
     }
     .brand { display:flex; align-items:center; gap:11px; padding:2px 9px 28px }
     .brand-mark {
       display:grid; place-items:center; width:38px; height:38px;
-      border-radius:13px; color:var(--green-dark); background:var(--lime);
-      font-size:21px; font-weight:900;
+      border-radius:13px; color:var(--green-deep); background:linear-gradient(160deg,var(--lime-hi),var(--lime));
+      font-size:21px; font-weight:800;
+      box-shadow:0 10px 24px rgba(201,244,92,.28), inset 0 1px 0 #ffffff80;
     }
-    .brand-name { font-size:20px; font-weight:900; letter-spacing:2px }
-    .brand-caption { margin-top:3px; color:#adc2b5; font-size:10px }
+    .brand-name { font-size:20px; font-weight:800; letter-spacing:2.5px }
+    .brand-caption { margin-top:3px; color:#a9c2b3; font-size:10px; letter-spacing:.4px }
     .nav-label {
       padding:0 11px 9px; color:#88a497; font-size:10px;
       font-weight:800; letter-spacing:1.3px; text-transform:uppercase;
@@ -53,123 +73,211 @@
     .nav { display:grid; gap:6px }
     .nav button {
       display:flex; align-items:center; gap:11px; width:100%;
-      padding:12px; border:0; border-radius:12px;
+      padding:12px; border:0; border-radius:13px;
       color:#b9c9c0; background:transparent; text-align:left;
-      transition:.18s;
+      transition:transform .22s var(--ease-out), background .22s, color .22s, box-shadow .22s;
     }
-    .nav button:hover { color:white; background:#ffffff12 }
+    .nav button:hover { color:white; background:#ffffff14; transform:translateX(4px) }
     .nav button.active {
-      color:var(--green-dark); background:var(--lime); font-weight:800;
+      color:var(--green-deep); background:linear-gradient(160deg,var(--lime-hi),var(--lime));
+      font-weight:800; transform:translateX(2px);
+      box-shadow:0 10px 26px rgba(201,244,92,.32), inset 0 1px 0 #ffffff66;
     }
     .nav-icon { width:20px; text-align:center; font-size:17px }
     .sidebar-bottom { margin-top:auto }
     .side-note {
       padding:15px; border:1px solid #ffffff1a; border-radius:15px;
-      background:#ffffff09; color:#bed0c5; font-size:11px; line-height:1.6;
+      background:#ffffff0a; color:#bed0c5; font-size:11px; line-height:1.6;
+      box-shadow:inset 0 1px 0 #ffffff0d;
     }
     .side-note strong { display:block; margin-bottom:5px; color:var(--lime); font-size:13px }
     .side-profile {
-      display:flex; align-items:center; gap:10px; margin-top:14px; padding:10px;
+      display:flex; align-items:center; gap:10px; margin-top:14px; padding:10px 4px 0;
       border-top:1px solid #ffffff1a; color:#edf5ed;
     }
     .avatar {
       display:grid; place-items:center; width:34px; height:34px;
-      border-radius:50%; color:var(--green-dark); background:var(--lime); font-weight:800;
+      border-radius:50%; color:var(--green-deep); background:var(--lime); font-weight:800;
+      box-shadow:0 6px 16px rgba(201,244,92,.25);
     }
     .profile-name { font-size:12px; font-weight:700 }
     .profile-label { margin-top:3px; color:#9cb3a5; font-size:10px }
-    main { min-width:0; padding:27px 31px 38px }
+
+    main { min-width:0; padding:27px 31px 38px; position:relative }
+    #bgCanvas {
+      position:absolute; inset:0; z-index:0; width:100%; height:100%;
+      pointer-events:none; opacity:.8; animation:canvasFade 1.4s ease both;
+    }
+    @keyframes canvasFade { from { opacity:0 } }
+    .topbar,.views { position:relative; z-index:1 }
     .topbar { display:flex; align-items:center; justify-content:space-between; gap:15px; margin-bottom:25px }
     .eyebrow { color:#9a824d; font-size:10px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase }
-    h1 { margin:5px 0 0; font-size:25px; letter-spacing:-.7px }
+    h1 { margin:5px 0 0; font-size:clamp(21px,2.2vw,26px); font-weight:800; letter-spacing:-.6px }
     .top-actions { display:flex; align-items:center; gap:9px }
     .month-input,.input,.select {
-      min-height:39px; padding:9px 11px; border:1px solid var(--line);
-      border-radius:10px; outline:none; color:var(--ink); background:white;
+      min-height:40px; padding:9px 12px; border:1px solid var(--line);
+      border-radius:12px; outline:none; color:var(--ink); background:white;
+      transition:border-color .2s, box-shadow .2s;
     }
-    .month-input:focus,.input:focus,.select:focus { border-color:#7caa8e }
+    .month-input:focus,.input:focus,.select:focus {
+      border-color:#7caa8e; box-shadow:0 0 0 4px #c9f45c4d;
+    }
     .button {
-      min-height:39px; padding:10px 14px; border:0; border-radius:10px;
-      color:white; background:var(--green); font-weight:800; transition:.18s;
+      min-height:40px; padding:10px 16px; border:0; border-radius:12px;
+      color:white; background:linear-gradient(180deg,#1b5844,var(--green));
+      font-weight:800; letter-spacing:.1px;
+      box-shadow:0 8px 22px rgba(18,58,42,.22), inset 0 1px 0 #ffffff26;
+      transition:transform .18s var(--ease-out), box-shadow .18s, filter .18s;
     }
-    .button:hover { transform:translateY(-1px); background:var(--green-dark) }
-    .button.lime { color:var(--green-dark); background:var(--lime) }
-    .button.lime:hover { background:#cafa4c }
-    .button.soft { color:var(--green); background:#e9f2e7 }
-    .button.danger { color:var(--red); background:#fff0ee }
+    .button:hover {
+      transform:translateY(-2px);
+      box-shadow:0 14px 30px rgba(18,58,42,.28), inset 0 1px 0 #ffffff26;
+      filter:brightness(1.06);
+    }
+    .button:active { transform:translateY(0) scale(.97) }
+    .button.lime {
+      color:var(--green-deep);
+      background:linear-gradient(180deg,#d8f98a,var(--lime));
+      box-shadow:0 8px 22px rgba(180,220,60,.42), inset 0 1px 0 #ffffff80;
+    }
+    .button.lime:hover { filter:brightness(1.04) }
+    .button.soft { color:var(--green); background:#e9f2e7; box-shadow:var(--shadow-sm) }
+    .button.soft:hover { background:#dfece0; box-shadow:var(--shadow-sm) }
+    .button.danger { color:var(--red); background:#fff0ee; box-shadow:var(--shadow-sm) }
+    .button.danger:hover { background:#ffe6e2 }
+
+    /* 3D-переключение разделов */
+    .views { perspective:1300px }
     .view { display:none }
-    .view.active { display:block; animation:show .22s ease }
-    @keyframes show { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:none } }
+    .view.active {
+      display:block;
+      animation:viewIn .42s var(--ease-in-out) backwards;
+    }
+    .view.active.from-left { animation-name:viewInLeft }
+    .view.exiting {
+      display:block; position:absolute; left:0; right:0; top:0;
+      pointer-events:none; visibility:hidden;
+      animation:viewOut .4s cubic-bezier(.55,.05,.75,.25) forwards;
+    }
+    .view.exiting.rev { animation-name:viewOutRev }
+    @keyframes viewIn {
+      0%   { opacity:0; transform:translateZ(-220px) rotateY(14deg) translateX(7%); visibility:hidden }
+      100% { opacity:1; transform:none; visibility:visible }
+    }
+    @keyframes viewInLeft {
+      0%   { opacity:0; transform:translateZ(-220px) rotateY(-14deg) translateX(-7%); visibility:hidden }
+      100% { opacity:1; transform:none; visibility:visible }
+    }
+    @keyframes viewOut {
+      0%   { opacity:1; transform:none; visibility:visible }
+      100% { opacity:0; transform:translateZ(-260px) rotateY(-12deg) translateX(-5%); visibility:hidden }
+    }
+    @keyframes viewOutRev {
+      0%   { opacity:1; transform:none; visibility:visible }
+      100% { opacity:0; transform:translateZ(-260px) rotateY(12deg) translateX(5%); visibility:hidden }
+    }
 
     .hero {
       position:relative; display:flex; align-items:center; justify-content:space-between;
-      gap:20px; min-height:205px; padding:27px 30px; overflow:hidden;
+      gap:20px; min-height:205px; padding:28px 32px; overflow:hidden;
       border-radius:22px; color:white;
-      background:linear-gradient(110deg,#164d3b 0%,#17634a 57%,#2e8056 100%);
+      background:linear-gradient(110deg,#123a2a 0%,#17634a 57%,#2e8056 100%);
+      box-shadow:var(--shadow-lg);
+      transform-style:preserve-3d;
     }
     .hero:after {
       content:""; position:absolute; width:310px; height:310px; right:70px; top:-190px;
       border:1px solid #ffffff28; border-radius:50%;
       box-shadow:0 0 0 32px #ffffff0c,0 0 0 67px #ffffff09,0 0 0 102px #ffffff06;
     }
+    .hero:before {
+      content:""; position:absolute; left:-88px; bottom:-124px; width:260px; height:260px;
+      border-radius:50%; background:radial-gradient(circle,#c9f45c2b,transparent 70%);
+      filter:blur(2px);
+    }
     .hero-content,.hero-side { position:relative; z-index:1 }
     .hero-label { color:#d1dfb0; font-size:10px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase }
     .hero h2 { margin:14px 0 4px; color:#deebe0; font-size:13px; font-weight:500 }
-    .balance { font-size:clamp(34px,5vw,47px); font-weight:850; letter-spacing:-2px }
+    .balance {
+      font-size:clamp(32px,4.6vw,46px); font-weight:800; letter-spacing:-2px;
+      text-shadow:0 10px 32px rgba(0,0,0,.22);
+      font-variant-numeric:tabular-nums;
+    }
     .hero-caption { margin-top:10px; color:#c3d8ca; font-size:11px }
     .hero-side {
-      width:205px; padding:15px; border:1px solid #ffffff27;
-      border-radius:15px; background:#ffffff13; backdrop-filter:blur(8px);
+      width:205px; padding:16px; border:1px solid #ffffff27;
+      border-radius:16px; background:#ffffff13; backdrop-filter:blur(8px);
+      box-shadow:0 18px 44px rgba(0,0,0,.18), inset 0 1px 0 #ffffff1f;
     }
     .hero-side-title { color:#c9dfce; font-size:10px }
-    .hero-side-amount { margin:7px 0 5px; color:var(--lime); font-size:22px; font-weight:850 }
+    .hero-side-amount { margin:7px 0 5px; color:var(--lime); font-size:22px; font-weight:800; font-variant-numeric:tabular-nums }
     .hero-side small { color:#c0d4c5; font-size:10px; line-height:1.4 }
 
     .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:14px 0 }
-    .stat,.card { border:1px solid var(--line); border-radius:16px; background:white }
-    .stat { padding:15px }
+    .card,.stat {
+      border:1px solid var(--line); border-radius:var(--r-lg); background:white;
+      box-shadow:var(--shadow-sm);
+      transition:transform .5s var(--ease-out), box-shadow .5s var(--ease-out), border-color .5s;
+    }
+    .stat { padding:16px }
+    .stat:hover,.card:hover {
+      border-color:#cbe0c6;
+      box-shadow:var(--shadow-md);
+    }
     .stat-head { display:flex; align-items:center; justify-content:space-between; color:var(--muted); font-size:11px }
     .stat-icon {
       display:grid; place-items:center; width:30px; height:30px;
       border-radius:10px; color:var(--green); background:#eaf3e9; font-size:15px;
     }
-    .stat-value { margin:12px 0 3px; font-size:19px; font-weight:850; letter-spacing:-.5px }
+    .stat-value { margin:12px 0 3px; font-size:19px; font-weight:800; letter-spacing:-.5px; font-variant-numeric:tabular-nums }
     .stat-sub { color:var(--muted); font-size:10px }
     .green { color:var(--green) } .red { color:var(--red) }
 
     .grid-two { display:grid; grid-template-columns:1.15fr .85fr; gap:14px; margin-bottom:14px }
     .card { padding:18px }
     .card-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:15px }
-    .card-title { margin:0; font-size:14px; font-weight:850 }
+    .card-title { margin:0; font-size:14px; font-weight:800 }
     .muted { color:var(--muted); font-size:10px }
     .chart-area { display:flex; align-items:center; gap:20px; min-height:176px }
+
+    /* Донат: заливка анимируется в JS поворотом-сегментом conic-gradient */
     .donut {
-      display:grid; place-items:center; position:relative; flex:0 0 140px;
-      width:140px; height:140px; border-radius:50%; background:#edf1e9;
+      display:grid; place-items:center; position:relative; flex:0 0 148px;
+      width:148px; height:148px; border-radius:50%; background:#edf1e9;
     }
-    .donut:after { content:""; position:absolute; width:91px; height:91px; border-radius:50%; background:white }
+    .donut:after { content:""; position:absolute; width:96px; height:96px; border-radius:50%; background:white; box-shadow:inset 0 2px 10px rgba(18,58,42,.06) }
     .donut-center { z-index:1; text-align:center }
-    .donut-center strong { display:block; font-size:15px }
+    .donut-center strong { display:block; font-size:15px; font-variant-numeric:tabular-nums }
     .donut-center span { color:var(--muted); font-size:9px }
     .legend { display:grid; flex:1; gap:10px }
     .legend-row { display:flex; justify-content:space-between; gap:8px; color:#58665e; font-size:10px }
     .legend-name { display:flex; align-items:center; gap:7px }
     .dot { width:8px; height:8px; border-radius:50%; background:var(--green) }
+
+    /* Столбики с анимацией роста */
     .bar-chart { display:flex; align-items:end; justify-content:space-around; gap:9px; height:150px; padding:8px 4px 0; border-bottom:1px solid var(--line) }
     .bar-item { display:flex; flex:1; flex-direction:column; align-items:center; justify-content:end; height:100%; gap:7px }
-    .bar-value { min-height:11px; color:var(--muted); font-size:9px }
+    .bar-value { min-height:11px; color:var(--muted); font-size:9px; font-variant-numeric:tabular-nums }
     .bar {
       width:min(31px,75%); min-height:3px; border-radius:8px 8px 3px 3px;
-      background:linear-gradient(180deg,#c8f462,#6caa58); transition:height .25s;
+      background:linear-gradient(180deg,#c8f462,#6caa58);
+      transform-origin:bottom center;
+      animation:barGrow .75s var(--ease-out) backwards;
     }
+    .bar:nth-child(odd) { animation-duration:.85s }
     .bar.current { background:linear-gradient(180deg,#ffc16a,#f08a4b) }
+    @keyframes barGrow {
+      0%   { transform:scaleY(0); opacity:0 }
+      60%  { opacity:1 }
+      100% { transform:scaleY(1); opacity:1 }
+    }
     .bar-label { color:var(--muted); font-size:9px }
-    .insight { background:#f0f5e8 }
+    .insight { background:linear-gradient(165deg,#f0f5e8,#eef5e0); }
     .insight-mark { color:#9b7d37; font-size:21px }
     .insight p { margin:10px 0 0; color:#57665d; font-size:12px; line-height:1.65 }
 
     .section-head { display:flex; align-items:end; justify-content:space-between; gap:12px; margin:21px 0 12px }
-    .section-head h2 { margin:0; font-size:16px }
+    .section-head h2 { margin:0; font-size:16px; font-weight:800 }
     .section-head p { margin:5px 0 0; color:var(--muted); font-size:10px }
     .toolbar { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:14px 0 }
     .toolbar .input { min-width:175px; flex:1 }
@@ -177,18 +285,40 @@
     table { width:100%; border-collapse:collapse; white-space:nowrap }
     th { padding:12px 8px; color:#96a097; text-align:left; font-size:9px; font-weight:800; letter-spacing:.5px }
     td { padding:12px 8px; border-top:1px solid #f0f2ed; font-size:11px }
+    tbody tr { transition:background .18s }
+    tbody tr:hover { background:#f6faf2 }
     .category-label { display:inline-flex; align-items:center; gap:6px; color:#526159 }
-    .pill { display:inline-flex; padding:5px 8px; border-radius:30px; color:var(--green); background:#eaf3e9; font-size:9px }
+    .pill { display:inline-flex; padding:5px 9px; border-radius:30px; color:var(--green); background:#eaf3e9; font-size:9px }
     .pill.expense { color:#b6534c; background:#fff0ee }
     .row-actions { display:flex; gap:5px }
-    .icon-btn { width:28px; height:28px; border:1px solid var(--line); border-radius:8px; color:#758078; background:white }
-    .icon-btn:hover { color:var(--green); border-color:#a9c1ae }
+    .icon-btn {
+      width:28px; height:28px; border:1px solid var(--line); border-radius:9px;
+      color:#758078; background:white;
+      transition:transform .18s var(--ease-out), color .18s, border-color .18s, box-shadow .18s;
+    }
+    .icon-btn:hover {
+      color:var(--green); border-color:#a9c1ae; transform:translateY(-2px);
+      box-shadow:0 6px 14px rgba(18,58,42,.14);
+    }
     .empty { padding:28px 12px; color:var(--muted); text-align:center; font-size:11px }
 
+    /* Прогресс-бары с плавным заполнением */
+    .progress { height:7px; margin:9px 0 7px; overflow:hidden; border-radius:10px; background:#edf1e9; }
+    .progress span {
+      display:block; height:100%; border-radius:10px; background:linear-gradient(90deg,#79b26c,#5e9b61);
+      transform-origin:left center; transform:scaleX(0);
+      animation:fillBar .8s var(--ease-out) forwards;
+    }
+    @keyframes fillBar { from { transform:scaleX(0) } to { transform:scaleX(1) } }
+    .progress span.warn { background:linear-gradient(90deg,#f5c470,#edae4e) }
+    .progress span.over { background:linear-gradient(90deg,#e68079,#df665d) }
     .budget-grid,.goals-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px }
     .budget-card,.goal-card {
-      padding:16px; border:1px solid var(--line); border-radius:15px; background:white;
+      padding:17px; border:1px solid var(--line); border-radius:16px; background:white;
+      box-shadow:var(--shadow-sm);
+      transition:transform .5s var(--ease-out), box-shadow .5s var(--ease-out), border-color .5s;
     }
+    .budget-card:hover,.goal-card:hover { border-color:#cbe0c6; box-shadow:var(--shadow-md) }
     .budget-top,.goal-top { display:flex; align-items:center; justify-content:space-between; gap:10px }
     .item-name { display:flex; align-items:center; gap:10px }
     .item-icon {
@@ -198,35 +328,55 @@
     .item-name strong { display:block; font-size:12px }
     .item-name small { display:block; margin-top:3px; color:var(--muted); font-size:9px }
     .budget-values { display:flex; justify-content:space-between; gap:8px; margin-top:15px; color:var(--muted); font-size:10px }
-    .budget-values strong { color:var(--ink) }
-    .progress { height:7px; margin:9px 0 7px; overflow:hidden; border-radius:10px; background:#edf1e9 }
-    .progress span { display:block; height:100%; border-radius:10px; background:#5e9b61; transition:width .2s }
-    .progress span.warn { background:#edae4e }
-    .progress span.over { background:#df665d }
+    .budget-values strong { color:var(--ink); font-variant-numeric:tabular-nums }
     .budget-foot { display:flex; justify-content:space-between; gap:8px; color:var(--muted); font-size:9px }
     .warning { margin-top:7px; color:var(--red); font-size:9px }
     .summary-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0 }
-    .summary-box { padding:14px; border:1px solid var(--line); border-radius:14px; background:white }
+    .summary-box {
+      padding:14px; border:1px solid var(--line); border-radius:15px; background:white;
+      box-shadow:var(--shadow-sm); transition:transform .5s var(--ease-out), box-shadow .5s var(--ease-out);
+    }
+    .summary-box:hover { box-shadow:var(--shadow-md) }
     .summary-box span { color:var(--muted); font-size:10px }
-    .summary-box strong { display:block; margin-top:7px; font-size:17px }
+    .summary-box strong { display:block; margin-top:7px; font-size:17px; font-variant-numeric:tabular-nums }
     .goal-amounts { display:flex; justify-content:space-between; gap:8px; margin-top:14px; color:var(--muted); font-size:10px }
+    .goal-amounts strong { color:var(--ink) }
     .goal-actions { display:flex; gap:6px; margin-top:13px }
     .goal-actions button { flex:1 }
     .health-wrap { display:flex; align-items:center; gap:15px }
     .health-score {
       display:grid; place-items:center; flex:0 0 62px; height:62px;
       border:5px solid var(--lime); border-radius:50%;
-      color:var(--green); font-size:17px; font-weight:900;
+      color:var(--green); font-size:17px; font-weight:800;
+      box-shadow:0 12px 28px rgba(201,244,92,.4);
     }
     .health-text strong { display:block; font-size:12px }
     .health-text span { display:block; margin-top:4px; color:var(--muted); font-size:10px; line-height:1.4 }
 
-    dialog { width:min(450px,calc(100% - 24px)); padding:0; border:0; border-radius:18px; box-shadow:0 25px 80px #101d1640 }
+    /* Модальные окна с 3D-появлением */
+    dialog {
+      width:min(450px,calc(100% - 24px)); padding:0; border:0; border-radius:20px;
+      box-shadow:0 25px 80px #101d1640;
+    }
     dialog::backdrop { background:#10251c77; backdrop-filter:blur(3px) }
+    dialog[open] { animation:modalIn .42s var(--ease-spring) backwards }
+    dialog.closing { animation:modalOut .22s ease-in forwards }
+    @keyframes modalIn {
+      from { opacity:0; transform:perspective(900px) rotateX(16deg) scale(.88) translateY(32px) }
+      to   { opacity:1; transform:none }
+    }
+    @keyframes modalOut {
+      from { opacity:1; transform:none }
+      to   { opacity:0; transform:perspective(900px) rotateX(10deg) scale(.92) translateY(18px) }
+    }
     .modal { padding:22px }
     .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:17px }
     .modal-head h2 { margin:0; font-size:17px }
-    .close { border:0; color:var(--muted); background:transparent; font-size:22px }
+    .close {
+      border:0; color:var(--muted); background:transparent; font-size:22px;
+      transition:transform .2s var(--ease-out), color .2s;
+    }
+    .close:hover { color:var(--red); transform:rotate(90deg) scale(1.15) }
     .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px }
     .field { display:grid; gap:6px }
     .field.full { grid-column:1/-1 }
@@ -234,6 +384,18 @@
     .field input,.field select { width:100% }
     .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:18px }
     .note { color:var(--muted); font-size:10px; line-height:1.5 }
+
+    /* prefers-reduced-motion: все анимации отключаются */
+    @media (prefers-reduced-motion:reduce) {
+      *,*::before,*::after {
+        animation-duration:.01ms !important; animation-iteration-count:1 !important;
+        transition-duration:.01ms !important; scroll-behavior:auto !important;
+      }
+      #bgCanvas { display:none }
+      .view.active { animation:none }
+      .progress span { transform:none !important; animation:none !important }
+      .bar { animation:none !important; transform:none !important }
+    }
 
     @media(max-width:950px) {
       .layout { grid-template-columns:205px minmax(0,1fr) }
@@ -251,12 +413,13 @@
       .brand-caption,.nav-label,.sidebar-bottom { display:none }
       .nav { display:flex; gap:3px; margin-top:9px }
       .nav button { justify-content:center; gap:4px; padding:8px 4px; font-size:9px }
+      .nav button:hover,.nav button.active { transform:none }
       .nav-icon { width:auto; font-size:13px }
       main { padding:19px 13px 30px }
-      .topbar { align-items:start; margin-bottom:18px }
+      .topbar { align-items:start; margin-bottom:18px; flex-direction:column }
       h1 { font-size:21px }
       .month-input { width:132px; min-height:36px; padding:7px; font-size:11px }
-      .top-actions { gap:6px }
+      .top-actions { gap:6px; width:100% }
       .top-actions .button { padding:9px; font-size:11px }
       .hero { min-height:195px; align-items:start; flex-direction:column; padding:21px 18px; gap:15px }
       .hero-side { width:100%; padding:10px 12px }
@@ -314,6 +477,7 @@
     </aside>
 
     <main>
+      <canvas id="bgCanvas" aria-hidden="true"></canvas>
       <header class="topbar">
         <div>
           <div class="eyebrow">Личный финансовый помощник</div>
@@ -325,109 +489,111 @@
         </div>
       </header>
 
-      <section class="view active" id="overview">
-        <div class="hero">
-          <div class="hero-content">
-            <div class="hero-label">Финансовый обзор · RUB</div>
-            <h2>Общий баланс</h2>
-            <div class="balance" id="balance">0 ₽</div>
-            <div class="hero-caption" id="balanceCaption">Доходы минус расходы за всё время</div>
-          </div>
-          <div class="hero-side">
-            <div class="hero-side-title">Можно потратить в этом месяце</div>
-            <div class="hero-side-amount" id="safeSpend">0 ₽</div>
-            <small id="safeSpendHint">После учёта бюджета и целей</small>
-          </div>
-        </div>
-
-        <div class="stats">
-          <div class="stat"><div class="stat-head">Доходы <span class="stat-icon">↗</span></div><div class="stat-value green" id="incomeValue">0 ₽</div><div class="stat-sub">За выбранный месяц</div></div>
-          <div class="stat"><div class="stat-head">Расходы <span class="stat-icon">↘</span></div><div class="stat-value" id="expenseValue">0 ₽</div><div class="stat-sub">За выбранный месяц</div></div>
-          <div class="stat"><div class="stat-head">Остаток бюджета <span class="stat-icon">▤</span></div><div class="stat-value" id="leftValue">Не задан</div><div class="stat-sub">По установленным лимитам</div></div>
-          <div class="stat"><div class="stat-head">Финансовый показатель <span class="stat-icon">✦</span></div><div class="stat-value" id="healthValue">—</div><div class="stat-sub" id="healthSub">Добавьте операции</div></div>
-        </div>
-
-        <div class="grid-two">
-          <div class="card">
-            <div class="card-head"><h3 class="card-title">Расходы по категориям</h3><span class="muted" id="chartMonth"></span></div>
-            <div class="chart-area">
-              <div class="donut" id="donut"><div class="donut-center"><strong id="donutTotal">0 ₽</strong><span>расходы</span></div></div>
-              <div class="legend" id="legend"></div>
+      <div class="views">
+        <section class="view active" id="overview">
+          <div class="hero">
+            <div class="hero-content">
+              <div class="hero-label">Финансовый обзор · RUB</div>
+              <h2>Общий баланс</h2>
+              <div class="balance" id="balance">0 ₽</div>
+              <div class="hero-caption" id="balanceCaption">Доходы минус расходы за всё время</div>
+            </div>
+            <div class="hero-side">
+              <div class="hero-side-title">Можно потратить в этом месяце</div>
+              <div class="hero-side-amount" id="safeSpend">0 ₽</div>
+              <small id="safeSpendHint">После учёта бюджета и целей</small>
             </div>
           </div>
-          <div class="card">
-            <div class="card-head"><h3 class="card-title">Расходы за полгода</h3><span class="muted">По месяцам</span></div>
-            <div class="bar-chart" id="barChart"></div>
-          </div>
-        </div>
 
-        <div class="grid-two">
-          <div class="card">
-            <div class="card-head"><h3 class="card-title">Последние операции</h3><button class="button soft" onclick="switchView('transactions')">Все операции →</button></div>
-            <div id="recentList"></div>
+          <div class="stats">
+            <div class="stat"><div class="stat-head">Доходы <span class="stat-icon">↗</span></div><div class="stat-value green" id="incomeValue">0 ₽</div><div class="stat-sub">За выбранный месяц</div></div>
+            <div class="stat"><div class="stat-head">Расходы <span class="stat-icon">↘</span></div><div class="stat-value" id="expenseValue">0 ₽</div><div class="stat-sub">За выбранный месяц</div></div>
+            <div class="stat"><div class="stat-head">Остаток бюджета <span class="stat-icon">▤</span></div><div class="stat-value" id="leftValue">Не задан</div><div class="stat-sub">По установленным лимитам</div></div>
+            <div class="stat"><div class="stat-head">Финансовый показатель <span class="stat-icon">✦</span></div><div class="stat-value" id="healthValue">—</div><div class="stat-sub" id="healthSub">Добавьте операции</div></div>
           </div>
-          <div class="card insight">
-            <div class="health-wrap">
-              <div class="health-score" id="healthCircle">—</div>
-              <div class="health-text"><strong id="healthTitle">Ваш финансовый месяц</strong><span id="healthDescription">Добавьте доходы и расходы, чтобы получить оценку.</span></div>
+
+          <div class="grid-two">
+            <div class="card">
+              <div class="card-head"><h3 class="card-title">Расходы по категориям</h3><span class="muted" id="chartMonth"></span></div>
+              <div class="chart-area">
+                <div class="donut" id="donut"><div class="donut-center"><strong id="donutTotal">0 ₽</strong><span>расходы</span></div></div>
+                <div class="legend" id="legend"></div>
+              </div>
             </div>
-            <p id="insightText"></p>
+            <div class="card">
+              <div class="card-head"><h3 class="card-title">Расходы за полгода</h3><span class="muted">По месяцам</span></div>
+              <div class="bar-chart" id="barChart"></div>
+            </div>
           </div>
-        </div>
-      </section>
 
-      <section class="view" id="transactions">
-        <div class="section-head">
-          <div><h2>Операции</h2><p>Записывайте доходы и расходы, чтобы видеть полную картину.</p></div>
-          <button class="button" onclick="exportCSV()">↓ Скачать CSV</button>
-        </div>
-        <div class="toolbar">
-          <input class="input" id="searchInput" placeholder="Поиск по названию или категории">
-          <select class="select" id="filterType"><option value="all">Все операции</option><option value="income">Доходы</option><option value="expense">Расходы</option></select>
-          <select class="select" id="filterMonth"><option value="selected">Выбранный месяц</option><option value="all">За всё время</option></select>
-          <button class="button" onclick="openTransaction()">＋ Операция</button>
-        </div>
-        <div class="card table-wrap">
-          <table>
-            <thead><tr><th>НАЗВАНИЕ</th><th>КАТЕГОРИЯ</th><th>ДАТА</th><th>ТИП</th><th>СУММА</th><th></th></tr></thead>
-            <tbody id="transactionRows"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="view" id="budgets">
-        <div class="section-head">
-          <div><h2>Бюджеты по категориям</h2><p>Следите за лимитами и замечайте превышения до конца месяца.</p></div>
-          <button class="button" onclick="openBudget()">＋ Лимит</button>
-        </div>
-        <div class="summary-row">
-          <div class="summary-box"><span>Общий лимит</span><strong id="budgetTotal">0 ₽</strong></div>
-          <div class="summary-box"><span>Потрачено</span><strong id="budgetSpent">0 ₽</strong></div>
-          <div class="summary-box"><span>Осталось</span><strong id="budgetRemaining">0 ₽</strong></div>
-        </div>
-        <div class="card" style="margin-bottom:13px;background:#f0f5e8">
-          <strong style="font-size:12px">Быстрое распределение</strong>
-          <p class="muted" style="line-height:1.6">Укажите доход — MONET предложит ориентиры по базовым расходам, личным тратам и накоплениям. Лимиты можно изменить вручную.</p>
-          <div class="toolbar" style="margin-bottom:0">
-            <input class="input" id="incomeForBudget" type="number" min="1" placeholder="Месячный доход, ₽">
-            <button class="button" onclick="suggestBudgets()">Рассчитать бюджет</button>
+          <div class="grid-two">
+            <div class="card">
+              <div class="card-head"><h3 class="card-title">Последние операции</h3><button class="button soft" onclick="switchView('transactions')">Все операции →</button></div>
+              <div id="recentList"></div>
+            </div>
+            <div class="card insight">
+              <div class="health-wrap">
+                <div class="health-score" id="healthCircle">—</div>
+                <div class="health-text"><strong id="healthTitle">Ваш финансовый месяц</strong><span id="healthDescription">Добавьте доходы и расходы, чтобы получить оценку.</span></div>
+              </div>
+              <p id="insightText"></p>
+            </div>
           </div>
-        </div>
-        <div class="budget-grid" id="budgetGrid"></div>
-      </section>
+        </section>
 
-      <section class="view" id="goals">
-        <div class="section-head">
-          <div><h2>Цели накоплений</h2><p>Большие покупки становятся понятнее, когда у них есть план.</p></div>
-          <button class="button" onclick="openGoal()">＋ Новая цель</button>
-        </div>
-        <div class="summary-row">
-          <div class="summary-box"><span>Всего нужно</span><strong id="goalsTotal">0 ₽</strong></div>
-          <div class="summary-box"><span>Уже отложено</span><strong id="goalsSaved">0 ₽</strong></div>
-          <div class="summary-box"><span>Осталось накопить</span><strong id="goalsLeft">0 ₽</strong></div>
-        </div>
-        <div class="goals-grid" id="goalsGrid"></div>
-      </section>
+        <section class="view" id="transactions">
+          <div class="section-head">
+            <div><h2>Операции</h2><p>Записывайте доходы и расходы, чтобы видеть полную картину.</p></div>
+            <button class="button" onclick="exportCSV()">↓ Скачать CSV</button>
+          </div>
+          <div class="toolbar">
+            <input class="input" id="searchInput" placeholder="Поиск по названию или категории">
+            <select class="select" id="filterType"><option value="all">Все операции</option><option value="income">Доходы</option><option value="expense">Расходы</option></select>
+            <select class="select" id="filterMonth"><option value="selected">Выбранный месяц</option><option value="all">За всё время</option></select>
+            <button class="button" onclick="openTransaction()">＋ Операция</button>
+          </div>
+          <div class="card table-wrap">
+            <table>
+              <thead><tr><th>НАЗВАНИЕ</th><th>КАТЕГОРИЯ</th><th>ДАТА</th><th>ТИП</th><th>СУММА</th><th></th></tr></thead>
+              <tbody id="transactionRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="budgets">
+          <div class="section-head">
+            <div><h2>Бюджеты по категориям</h2><p>Следите за лимитами и замечайте превышения до конца месяца.</p></div>
+            <button class="button" onclick="openBudget()">＋ Лимит</button>
+          </div>
+          <div class="summary-row">
+            <div class="summary-box"><span>Общий лимит</span><strong id="budgetTotal">0 ₽</strong></div>
+            <div class="summary-box"><span>Потрачено</span><strong id="budgetSpent">0 ₽</strong></div>
+            <div class="summary-box"><span>Осталось</span><strong id="budgetRemaining">0 ₽</strong></div>
+          </div>
+          <div class="card" style="margin-bottom:13px;background:linear-gradient(165deg,#f0f5e8,#eef5e0)">
+            <strong style="font-size:12px">Быстрое распределение</strong>
+            <p class="muted" style="line-height:1.6">Укажите доход — MONET предложит ориентиры по базовым расходам, личным тратам и накоплениям. Лимиты можно изменить вручную.</p>
+            <div class="toolbar" style="margin-bottom:0">
+              <input class="input" id="incomeForBudget" type="number" min="1" placeholder="Месячный доход, ₽">
+              <button class="button" onclick="suggestBudgets()">Рассчитать бюджет</button>
+            </div>
+          </div>
+          <div class="budget-grid" id="budgetGrid"></div>
+        </section>
+
+        <section class="view" id="goals">
+          <div class="section-head">
+            <div><h2>Цели накоплений</h2><p>Большие покупки становятся понятнее, когда у них есть план.</p></div>
+            <button class="button" onclick="openGoal()">＋ Новая цель</button>
+          </div>
+          <div class="summary-row">
+            <div class="summary-box"><span>Всего нужно</span><strong id="goalsTotal">0 ₽</strong></div>
+            <div class="summary-box"><span>Уже отложено</span><strong id="goalsSaved">0 ₽</strong></div>
+            <div class="summary-box"><span>Осталось накопить</span><strong id="goalsLeft">0 ₽</strong></div>
+          </div>
+          <div class="goals-grid" id="goalsGrid"></div>
+        </section>
+      </div>
     </main>
   </div>
 </div>
@@ -493,6 +659,7 @@
     "Развлечения":"✦","Кафе":"☕","Связь":"⌁","Образование":"▣",
     "Зарплата":"↙","Подработка":"↙","Подарок":"✧","Инвестиции":"◈","Другое":"•"
   };
+  const prefersReducedMotion = matchMedia("(prefers-reduced-motion:reduce)").matches;
 
   const localToday = () => {
     const d = new Date();
@@ -547,12 +714,37 @@
   document.getElementById("filterType").addEventListener("change",renderTransactions);
   document.getElementById("filterMonth").addEventListener("change",renderTransactions);
 
+  /* 3D-переключение разделов: уходящая секция наклоняется и уходит вглубь,
+     новая появляется из глубины; длительность ~420 мс, без рывков. */
+  const viewOrder = ["overview","transactions","budgets","goals"];
+  let switchLock = null;
   function switchView(name) {
+    if (switchLock) { clearTimeout(switchLock); document.querySelector(".view.exiting")?.remove(); }
+    const currentEl = document.querySelector(".view.active");
+    if (currentEl && currentEl.id === name) { render(); return; }
+    const currentId = currentEl ? currentEl.id : viewOrder[0];
+    const dir = viewOrder.indexOf(name) >= viewOrder.indexOf(currentId) ? "fwd" : "rev";
+    if (currentEl) {
+      const ghost = currentEl.cloneNode(true);
+      ghost.classList.remove("active");
+      ghost.classList.add("exiting");
+      ghost.querySelectorAll("canvas,#bgCanvas").forEach(c=>c.remove());
+      if (dir === "rev") ghost.classList.add("rev");
+      ghost.id = "";
+      currentEl.parentNode.appendChild(ghost);
+      switchLock = setTimeout(()=>{ ghost.remove(); switchLock = null; }, 430);
+    }
     document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===name));
     document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
     document.getElementById("pageTitle").textContent={
       overview:"Обзор",transactions:"Операции",budgets:"Бюджеты",goals:"Цели"
     }[name] || "MONET";
+    const target = document.getElementById(name);
+    if (target) {
+      target.classList.remove("from-left");
+      if (dir === "rev") target.classList.add("from-left");
+      void target.offsetWidth;
+    }
     render();
   }
   function totals(transactions) {
@@ -570,6 +762,20 @@
     return sums;
   }
 
+  /* Счётчик «накручивания» цифр при загрузке (баланс/доходы/расходы ~800 мс) */
+  function animateCount(el, target, opts={}) {
+    const dur = prefersReducedMotion ? 0 : (opts.duration ?? 800);
+    if (dur === 0) { el.textContent = opts.format(target); return; }
+    const start = performance.now();
+    function frame(now) {
+      const p = Math.min(1,(now-start)/dur);
+      const eased = 1-Math.pow(1-p,3);
+      el.textContent = opts.format(Math.round(target*eased));
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
   function renderOverview() {
     const month=selectedMonth(), tx=monthTx(month), m=totals(tx), all=totals(data.transactions);
     const balance=all.income-all.expense;
@@ -578,11 +784,11 @@
     const goalsLeft=data.goals.reduce((s,g)=>s+Math.max(0,g.target-g.saved),0);
     const safe=limits>0 ? Math.max(0,Math.min(balance,limits-spent)-goalsLeft) : Math.max(0,balance-goalsLeft);
 
-    document.getElementById("balance").textContent=money(balance);
-    document.getElementById("incomeValue").textContent=money(m.income);
-    document.getElementById("expenseValue").textContent=money(m.expense);
+    animateCount(document.getElementById("balance"), balance, {format:money});
+    animateCount(document.getElementById("incomeValue"), m.income, {format:money});
+    animateCount(document.getElementById("expenseValue"), m.expense, {format:money});
     document.getElementById("leftValue").textContent=limits?money(limits-spent):"Не задан";
-    document.getElementById("safeSpend").textContent=money(safe);
+    animateCount(document.getElementById("safeSpend"), safe, {format:money});
     document.getElementById("chartMonth").textContent=monthName(month);
 
     const savingsRate=m.income ? Math.round(Math.max(0,(m.income-m.expense)/m.income)*100) : 0;
@@ -611,16 +817,37 @@
     document.getElementById("recentList").innerHTML=recent.length?recent.map(transactionHTML).join(""):`<div class="empty">Пока нет операций. Нажмите «Добавить».</div>`;
   }
 
+  /* Донат рисуется коническим градиентом; при рендере сегмент
+     поворачивается и плавно «дозаливается» до полного круга (~900 мс). */
   function renderDonut(tx) {
     const entries=Object.entries(categorySums(tx)).sort((a,b)=>b[1]-a[1]);
     const total=entries.reduce((s,x)=>s+x[1],0);
+    const donut=document.getElementById("donut");
     document.getElementById("donutTotal").textContent=money(total);
     let acc=0;
-    const gradients=entries.map(([,value],i)=>{
+    const segments=entries.map(([,value],i)=>{
       const start=acc; acc+=total?value/total*100:0;
-      return `${palette[i%palette.length]} ${start}% ${acc}%`;
+      return {color:palette[i%palette.length], start, end:acc};
     });
-    document.getElementById("donut").style.background=gradients.length?`conic-gradient(${gradients.join(",")})`:"#edf1e9";
+    const drawAt=filled => {
+      if (!segments.length) { donut.style.background="#edf1e9"; return; }
+      const spins = segments.map(s=>{
+        const end=Math.min(100, s.end*filled);
+        return `${s.color} ${Math.min(100,s.start*filled)}% ${end}%`;
+      });
+      donut.style.background=`conic-gradient(${spins.join(",")})`;
+    };
+    if (segments.length && !prefersReducedMotion) {
+      const t0=performance.now(), dur=900;
+      const step=now=>{
+        const p=Math.min(1,(now-t0)/dur);
+        drawAt(1-Math.pow(1-p,3));
+        if (p<1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    } else {
+      drawAt(segments.length?1:0);
+    }
     document.getElementById("legend").innerHTML=entries.length
       ? entries.slice(0,5).map(([name,value],i)=>`<div class="legend-row"><span class="legend-name"><i class="dot" style="background:${palette[i%palette.length]}"></i>${esc(name)}</span><strong>${money(value)}</strong></div>`).join("")
       : `<div class="muted">Расходов пока нет</div>`;
@@ -636,8 +863,8 @@
       months.push({key,amount,label:d.toLocaleDateString("ru-RU",{month:"short"}).replace(".","")});
     }
     const max=Math.max(1,...months.map(m=>m.amount));
-    document.getElementById("barChart").innerHTML=months.map(m=>
-      `<div class="bar-item"><span class="bar-value">${m.amount?new Intl.NumberFormat("ru-RU",{notation:"compact",maximumFractionDigits:1}).format(m.amount):""}</span><div class="bar ${m.key===selectedMonth()?"current":""}" style="height:${Math.max(3,m.amount/max*92)}%"></div><span class="bar-label">${esc(m.label)}</span></div>`
+    document.getElementById("barChart").innerHTML=months.map((m,i)=>
+      `<div class="bar-item"><span class="bar-value">${m.amount?new Intl.NumberFormat("ru-RU",{notation:"compact",maximumFractionDigits:1}).format(m.amount):""}</span><div class="bar ${m.key===selectedMonth()?"current":""}" style="height:${Math.max(3,m.amount/max*92)}%;animation-delay:${i*60}ms"></div><span class="bar-label">${esc(m.label)}</span></div>`
     ).join("");
   }
 
@@ -856,7 +1083,107 @@
     link.download="monet-operacii.csv"; link.click();
     URL.revokeObjectURL(link.href);
   }
-  function closeDialog(id) { document.getElementById(id).close(); }
+
+  /* Закрытие модалок с обратной 3D-анимацией */
+  function closeDialog(id) {
+    const dlg=document.getElementById(id);
+    if (prefersReducedMotion || !dlg.open) { dlg.close(); return; }
+    dlg.classList.add("closing");
+    dlg.addEventListener("animationend",function h(){
+      dlg.removeEventListener("animationend",h);
+      dlg.classList.remove("closing");
+      dlg.close();
+    });
+  }
+
+  /* Tilt-эффект для карточек: лёгкий наклон 3–5° с плавным возвратом.
+     Обработчики вешаются делегированно и очищаются на mouseleave карточки. */
+  (function initTilt(){
+    if (prefersReducedMotion || matchMedia("(hover:none)").matches) return;
+    const tiltSelectors=".stat,.card,.budget-card,.goal-card,.summary-box";
+    let raf=0;
+    function apply(el,x,y){
+      const r=el.getBoundingClientRect();
+      const px=(x-r.left)/r.width-.5, py=(y-r.top)/r.height-.5;
+      el.style.transform=`perspective(900px) rotateX(${(-py*5).toFixed(2)}deg) rotateY(${(px*5).toFixed(2)}deg) translateY(-3px)`;
+    }
+    document.body.addEventListener("pointermove",e=>{
+      const el=e.target.closest(tiltSelectors);
+      if(!el) return;
+      cancelAnimationFrame(raf);
+      raf=requestAnimationFrame(()=>apply(el,e.clientX,e.clientY));
+    },true);
+    document.body.addEventListener("pointerover",e=>{
+      const el=e.target.closest(tiltSelectors);
+      if(el) el.style.transition="transform .12s linear";
+    },true);
+    document.body.addEventListener("pointerout",e=>{
+      const el=e.target.closest && e.target.closest(tiltSelectors);
+      if(el && !el.contains(e.relatedTarget)) {
+        el.style.transition="transform .5s var(--ease-out)";
+        el.style.transform="";
+      }
+    },true);
+  })();
+
+  /* Живой фон: мягкие объёмные градиентные блобы на canvas.
+     transform/opacity-free (чистый canvas, перерисовка ~60 fps),
+     останавливается, когда вкладка неактивна, и при prefers-reduced-motion. */
+  (function initBackground(){
+    const canvas=document.getElementById("bgCanvas");
+    if (!canvas || prefersReducedMotion) return;
+    const ctx=canvas.getContext("2d");
+    let W=0,H=0,dpr=1,blobs=[],running=false,rafId=0;
+
+    function resize(){
+      const r=canvas.parentElement.getBoundingClientRect();
+      dpr=Math.min(2,window.devicePixelRatio||1);
+      W=Math.max(0,r.width); H=Math.max(0,r.height);
+      canvas.width=W*dpr; canvas.height=H*dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    function makeBlobs(){
+      const colors=[["#c9f45c","rgba(201,244,92,"],["#8bb898","rgba(139,184,152,"],["#164d3b","rgba(22,77,59,"],["#d8f98a","rgba(216,249,138,"],["#a78bfa","rgba(167,139,250,"]];
+      blobs=colors.map((c,i)=>{
+        const sizeRatio = i % 2 === 0 ? 0.32 : 0.22;
+        return {
+          x:Math.random()*W, y:Math.random()*H,
+          r:Math.max(90,(W*sizeRatio)),
+          hue:c[0], rgba:c[1],
+          vx:(Math.random()*.25+.1)*(Math.random()<.5?-1:1),
+          vy:(Math.random()*.2+.08)*(Math.random()<.5?-1:1),
+          alpha:i===0?.07:.045
+        };
+      });
+    }
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      blobs.forEach(b=>{
+        b.x+=b.vx; b.y+=b.vy;
+        if(b.x<-b.r) b.x=W+b.r; if(b.x>W+b.r) b.x=-b.r;
+        if(b.y<-b.r) b.y=H+b.r; if(b.y>H+b.r) b.y=-b.r;
+        const g=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r);
+        g.addColorStop(0,b.rgba+b.alpha+")");
+        g.addColorStop(1,b.rgba+"0)");
+        ctx.fillStyle=g;
+        ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill();
+      });
+      rafId=requestAnimationFrame(loop);
+    }
+    function loop(){ if(running) draw(); }
+    function start(){ if(!running){ running=true; loop(); } }
+    function stop(){ running=false; cancelAnimationFrame(rafId); }
+
+    resize(); makeBlobs(); start();
+    let rt=0;
+    window.addEventListener("resize",()=>{
+      clearTimeout(rt);
+      rt=setTimeout(()=>{ resize(); makeBlobs(); },200);
+    });
+    document.addEventListener("visibilitychange",()=>{
+      document.hidden ? stop() : start();
+    });
+  })();
 
   render();
 </script>
